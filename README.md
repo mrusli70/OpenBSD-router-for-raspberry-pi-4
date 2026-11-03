@@ -9,6 +9,7 @@ https://cdn.openbsd.org/pub/OpenBSD/8.0/arm64/install80.img
 type
 
 boot> set tty fb0
+
 boot> boot
 
 to enable dhcp on asix 88179 usb ethernet adapter

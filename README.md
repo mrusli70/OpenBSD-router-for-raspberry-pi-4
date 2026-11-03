@@ -12,6 +12,8 @@ boot> set tty fb0
 
 boot> boot
 
+install the operating system first before doing the router build
+
 follow the instructions from the build
 
 to enable dhcp on asix 88179 usb ethernet adapter

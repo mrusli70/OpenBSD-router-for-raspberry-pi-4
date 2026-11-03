@@ -4,6 +4,8 @@ OpenBSD router for the rasberry pi 4
 
 Download install80.img
 
+burn to the sd card with raspberry pi imager 
+
 https://cdn.openbsd.org/pub/OpenBSD/8.0/arm64/install80.img
 
 type

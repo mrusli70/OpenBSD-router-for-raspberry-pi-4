@@ -12,6 +12,8 @@ boot> set tty fb0
 
 boot> boot
 
+follow the instructions from the build
+
 to enable dhcp on asix 88179 usb ethernet adapter
 
 type command

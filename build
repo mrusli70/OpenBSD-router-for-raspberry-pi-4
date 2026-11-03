@@ -148,6 +148,7 @@ rcctl restart unbound
 # Temporary (until reboot)
 sysctl net.inet.tcp.syncache=1
 
+nano /etc/sysctl.conf
 # Permanent
 echo 'net.inet.tcp.syncache=1' >> /etc/sysctl.conf
 

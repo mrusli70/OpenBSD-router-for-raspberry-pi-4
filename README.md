@@ -23,3 +23,9 @@ type command
 sh /etc/netstart axen0 up
 
 a couple times to get the dhcp address.
+
+to upgrade and upgrade patches type
+
+syspatch
+
+pkg_add -u

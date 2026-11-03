@@ -1,0 +1,176 @@
+Type
+
+Boot> set tty fb0
+Boot> boot
+
+Install OpenBSD on raspberry pi 4 on sd card
+
+nano /etc/hostname.axen0
+dhcp
+up
+
+nano /etc/hostname.bse0
+inet 192.168.1.1 255.255.255.0 NONE
+up
+
+sh /etc/netstart
+
+
+nano /etc/pf.conf
+
+ext_if = "axen0"
+int_if = "bse0"
+
+set skip lo0
+set block-policy drop
+set loginterface egress
+
+match out on $ext_if inet from !($ext_if:network) to any nat-to ($ext_if:0)
+
+block in all
+pass out all keep state
+
+anti spoof quick for $int_if
+
+table <bruteforce> persist 
+block in quick from <bruteforce> to any
+
+pass in on $int_if inet 
+
+pfctl -nf /etc/pf.conf # syntax check
+pfctl -f /etc/pf.conf
+pfctl -e # enable if not already
+rcctl enable pf # make permanent
+
+echo 'net.inet.ip.forwarding=1' >> /etc/sysctl.conf
+
+nano /etc/dhcp.conf
+
+subnet 192.168.1.0 netmask 255.255.255.0 {
+       option routers 192.168.1.1;
+       option domain-name-servers 8.8.8.8, 8.8.4.4;
+       range 192.168.1.100 192.168.1.200;
+}
+
+echo 'dhcpd_flags="bse0"' >> /etc/rc.conf.local
+rcctl enable dhcpd
+rcctl start dhcpd
+
+nano /var/unbound/etc/unbound.conf
+
+server:
+              interface: 127.0.0.1
+              interface: ::1
+               
+               access-control: 0.0.0.0/0 refuse
+               access-control: 127.0.0.0/8 allow
+               access-control: ::0/0 refuse
+               access-control: ::1 allow
+
+               hide-identity: yes
+               hide-version: yes
+               harden-glue: yes
+               harden-dnssec-stripped: yes
+               use-caps-for-id: yes
+               name-minimisation: yes
+               prefetch: yes
+
+               auto-trust-anchor-file: "/var/unbound/db/root.key"
+               # root-hints: "/var/unbound/etc/root.hints"
+               val-log-level: 2
+
+               aggressive-nsec: yes
+
+remote-control:
+                 control-enable: yes
+                 control-interface: /var/run/unbound.sock
+
+forward-zone:
+           name: "*"
+           forward-tls-upstream: yes
+           forward-addr: 8.8.8.8@853#dns.google
+           forward-addr: 8.8.4.4@853#dns.google
+
+# Root hints
+ftp -o /var/unbound/etc/root.hints https://www.internic.net/domain/named.root
+chown _unbound:_unbound /var/unbound/etc/root.hints
+
+# Trust anchor (DNSSEC)
+unbound-anchor -a /var/unbound/db/root.key
+chown _unbound:_unbound /var/unbound/db/root.key
+
+# Check syntax
+unbound-checkconf
+
+# Restart Unbound
+rcctl enable unbound
+rcctl start unbound
+rcctl check unbound
+
+# Create the directory if it doesn't exist
+mkdir -p /var/unbound/db
+
+# Generate the root trust anchor
+unbound-anchor -a /var/unbound/db/root.key
+
+# Set correct ownership
+chown -R _unbound:_unbound /var/unbound/db
+
+unbound-checkconf
+rcctl restart unbound
+rcctl check unbound
+
+mkdir -p /var/unbound/db && \
+unbound-anchor -a /var/unbound/db/root.key && \
+chown -R _unbound:_unbound /var/unbound/db && \
+unbound-checkconf
+
+rcctl -f start unbound
+
+# Create trust anchor
+mkdir -p /var/unbound/db
+unbound-anchor -a /var/unbound/db/root.key
+chown -R _unbound:_unbound /var/unbound/db
+
+# Root hints
+ftp -o /var/unbound/etc/root.hints https://www.internic.net/domain/named.root
+chown _unbound:_unbound /var/unbound/etc/root.hints
+
+# Enable and start Unbound
+rcctl enable unbound
+rcctl restart unbound
+
+# Make the router itself use Unbound
+echo "nameserver 127.0.0.1" > /etc/resolv.conf
+echo "nameserver 127.0.0.1" > /etc/resolv.conf.tail
+
+# Temporary (until reboot)
+sysctl net.inet.tcp.syncache=1
+
+# Permanent
+echo 'net.inet.tcp.syncache=1' >> /etc/sysctl.conf
+
+sysctl net.inet.tcp.syncache
+
+# Show all TCP-related settings
+sysctl net.inet.tcp
+
+# Common hardening / performance options
+net.inet.tcp.syncache=1 # Enable SYN cookies
+net.inet.tcp.synbucketlimit=100 # Limit per-bucket SYN flood protection
+net.inet.tcp.synhashsize=512 # Hash table size for SYN cache
+
+sysctl -f /etc/sysctl.conf
+
+echo "nameserver 8.8.8.8
+nameserver 8.8.4.4
+lookup file bind" > /etc/resolv.conf
+
+# Optional: make it immutable
+chflags schg /etc/resolv.conf
+
+
+
+
+
+

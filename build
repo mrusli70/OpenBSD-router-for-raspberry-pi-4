@@ -24,6 +24,7 @@ int_if = "bse0"
 set skip lo0
 set block-policy drop
 set loginterface egress
+set syncookies always
 
 match out on $ext_if inet from !($ext_if:network) to any nat-to ($ext_if:0)
 
@@ -150,7 +151,7 @@ sysctl net.inet.tcp.syncache=1
 
 nano /etc/sysctl.conf
 # Permanent
-echo 'net.inet.tcp.syncache=1' >> /etc/sysctl.conf
+echo 'net.inet.tcp.syncachelimit=10240' >> /etc/sysctl.conf
 
 sysctl net.inet.tcp.syncache
 
@@ -158,7 +159,7 @@ sysctl net.inet.tcp.syncache
 sysctl net.inet.tcp
 
 # Common hardening / performance options
-net.inet.tcp.syncache=1 # Enable SYN cookies
+net.inet.tcp.syncachelimit=10240 # Enable SYN cookies
 net.inet.tcp.synbucketlimit=100 # Limit per-bucket SYN flood protection
 net.inet.tcp.synhashsize=512 # Hash table size for SYN cache
 

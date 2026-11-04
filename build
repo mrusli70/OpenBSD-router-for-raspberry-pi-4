@@ -83,12 +83,12 @@ server:
                # root-hints: "/var/unbound/etc/root.hints"
                val-log-level: 2
 
-               aggressive-nsec: yes
-
                private-address: 10.0.0.0/8
                private-address: 172.16.0.0/12
                private-address: 192.168.0.0/16
                private-address: 169.254.0.0./16
+
+               aggressive-nsec: yes
 
 remote-control:
                  control-enable: yes

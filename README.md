@@ -59,3 +59,5 @@ check security update via
 https://www.openbsd.org/security.html
 
 to shutdown type shutdown -h now
+
+https://www.openbsdhandbook.com/upgrade/

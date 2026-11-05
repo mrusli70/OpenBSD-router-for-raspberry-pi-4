@@ -53,3 +53,7 @@ to upgrade and upgrade patches type
 syspatch
 
 pkg_add -u
+
+check security update via 
+
+https://www.openbsd.org/security.html

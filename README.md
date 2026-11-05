@@ -2,6 +2,9 @@
 
 OpenBSD router for the rasberry pi 4
 
+WAN is asix 88179 usb ethernet
+LAN is built in ethernet raspberry pi 4
+
 Download install80.img
 
 burn to the sd card with raspberry pi imager 

@@ -37,7 +37,7 @@ to enable dhcp on asix 88179 usb ethernet adapter
 
 type command
 
-sh /etc/netstart axen0 up
+sh /etc/netstart axen0
 
 a couple times to get the dhcp address.
 

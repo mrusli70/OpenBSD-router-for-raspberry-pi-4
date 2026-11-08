@@ -1,4 +1,4 @@
-# OpenBSD router for raspberry pi-4
+# OpenBSD router for raspberry pi 4
 
 OpenBSD router for the rasberry pi 4
 
